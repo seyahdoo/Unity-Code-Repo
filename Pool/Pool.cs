@@ -198,9 +198,9 @@ public class Pool : MonoBehaviour {
     }
 
 
+
     //INFINITE LOOP ALERT!!!!!!!!
         //if created by pool manager...
-
     //On Created set yourself as pool in poolmanager
     //void Awake()
     //{

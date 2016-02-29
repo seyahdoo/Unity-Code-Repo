@@ -16,6 +16,12 @@ public class PoolManager : Singleton<PoolManager> {
         public Pool Pool;
     } 
     
+    /// <summary>
+    /// Sets a Pool for given gameobject name
+    /// Eg. SetPool("Enemy1",pool);
+    /// </summary>
+    /// <param name="TypeName">Name of gameobject to pool</param>
+    /// <param name="Pool">Pool object to set</param>
     public void SetPool(string TypeName,Pool Pool)
     {
         foreach (PoolObject po in PoolObjects)
@@ -42,6 +48,14 @@ public class PoolManager : Singleton<PoolManager> {
         
     }
 	
+
+    /// <summary>
+    /// Returns a gameobject for given name
+    /// Creates one object from sample if there is no pool 
+    /// Eg. Gameobject go = GetGameObject("Enemy1");
+    /// </summary>
+    /// <param name="Type">Name of Object</param>
+    /// <returns>Gameobject like Sample </returns>
 	public GameObject GetGameObject(string Type)
     {
         //try to find object in list
@@ -100,6 +114,12 @@ public class PoolManager : Singleton<PoolManager> {
         return GameObject.CreatePrimitive(PrimitiveType.Cube);
     }
     
+    /// <summary>
+    /// Creates pool for Sample object
+    /// </summary>
+    /// <param name="Sample">Gameobject to create pool for</param>
+    /// <param name="Size">Size of pool</param>
+    /// <returns>New Pool object full of objects</returns>
     public Pool CreatePool(GameObject Sample,int Size)
     {
         GameObject go = new GameObject(Sample.name);
@@ -112,6 +132,12 @@ public class PoolManager : Singleton<PoolManager> {
         return p;
     }
 
+    /// <summary>
+    /// Use this to give back your poolable object
+    /// Eg. ReturnObject(UsedEnemy);
+    /// Destroys object if not poolable.
+    /// </summary>
+    /// <param name="ToReturn">A poolable object</param>
     public void ReturnObject(GameObject ToReturn)
     {
         //if its in a pool return it to his pool
