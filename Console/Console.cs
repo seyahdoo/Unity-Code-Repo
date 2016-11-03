@@ -7,8 +7,13 @@ using System;
 /// </summary>
 public class Console : MonoBehaviour {
 
-    public bool IsListening = false;
-    public string cmd = "";
+    bool IsListening = false;
+    string cmd = "";
+    string lastCmd = "help";
+    bool IsSensing = false;
+    List<string> SenseMatches;
+    int sensei;
+
 
     void Update()
     {
@@ -18,25 +23,69 @@ public class Console : MonoBehaviour {
             IsListening = true;
             cmd = "";
         }
-        else if (Input.GetKeyDown(KeyCode.BackQuote) && IsListening)
+        //If console button again, Stop listening
+        else if ((Input.GetKeyDown(KeyCode.BackQuote)||Input.GetKeyDown(KeyCode.Escape)) && IsListening)
         {
+            IsSensing = false;
             IsListening = false;
             cmd = "";
         }
+        //If Pressed Return excecute!!!
         else if (Input.GetKeyDown(KeyCode.Return) && IsListening)
         {
-            ConsoleController.Execute(cmd);
+            lastCmd = cmd;
             IsListening = false;
+            IsSensing = false;
+            ConsoleController.Execute(cmd);
         }
+        //Bacspace deletes
         else if (Input.GetKeyDown(KeyCode.Backspace) && IsListening)
         {
             //delete last character from cmd
             cmd = cmd.Remove(cmd.Length - 1);
+
+            IsSensing = false;
         }
+        //Tab will call the nearest possible command
         else if (Input.GetKeyDown(KeyCode.Tab) && IsListening)
         {
-            //TODO
-            Debug.Log("Intellisense");
+            if (!IsSensing)
+            {
+                IsSensing = true;
+                SenseMatches.Clear();
+                sensei = 0;
+                foreach (string key in ConsoleController.instance.commands.Keys)
+                {
+                    if (key.StartsWith(cmd))
+                    {
+                        SenseMatches.Add(key);
+                    }
+                }
+                if (SenseMatches.Count == 0)
+                {
+                    Debug.Log("There is no command stating with " + cmd);
+                    IsSensing = false;
+                    return;
+                }
+
+                //shortest one first
+                SenseMatches.Sort((x1, x2) => x1.Length.CompareTo(x2.Length));
+            }
+
+            cmd = SenseMatches[sensei];
+            
+            //sensei++
+            sensei = (sensei + 1) % SenseMatches.Count;
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha1) && IsListening)
+        {
+            //"1 ==> repeat last command
+            if (cmd == "")
+            {
+                IsListening = false;
+                IsSensing = false;
+                ConsoleController.Execute(lastCmd);
+            }
         }
         else if (Input.anyKeyDown && IsListening)
         {
@@ -83,7 +132,7 @@ public partial class ConsoleController
     /// <summary>
     /// Object to hold information about each command
     /// </summary>
-    class CommandRegistration
+    public class CommandRegistration
     {
         public string command { get; private set; }
         public CommandHandler handler { get; private set; }
@@ -97,14 +146,14 @@ public partial class ConsoleController
         }
     }
 
-    static Dictionary<string, CommandRegistration> commands = new Dictionary<string, CommandRegistration>();
+    public Dictionary<string, CommandRegistration> commands = new Dictionary<string, CommandRegistration>();
 
     void registerCommand(string command, CommandHandler handler, string help)
     {
         commands.Add(command, new CommandRegistration(command, handler, help));
     }
 
-    public void runCommandString(string commandString)
+    void runCommandString(string commandString)
     {
         Debug.Log("$ " + commandString);
 
@@ -126,7 +175,7 @@ public partial class ConsoleController
         //commandHistory.Add(commandString);
     }
 
-    public void runCommand(string command, string[] args)
+    void runCommand(string command, string[] args)
     {
         CommandRegistration reg = null;
         if (!commands.TryGetValue(command, out reg))

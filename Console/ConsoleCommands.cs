@@ -12,6 +12,7 @@ public partial class ConsoleController {
         //registerCommand("resetprefs", resetPrefs, "Reset & saves PlayerPrefs.");
         registerCommand("help", help, "Print this help.");
         registerCommand("echo", echo, "echoes arguments back as array (for testing argument parser)");
+        registerCommand("eche", echo, "echoes arguments back as array (for testing argument parser)");
         registerCommand("loadnext", loadNext, "Loads next level (Game manager Tester!)");
         registerCommand("endlevel", endLevel, "Ends current level (Game manager Tester!)");
 
