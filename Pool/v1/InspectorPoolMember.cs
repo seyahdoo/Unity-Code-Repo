@@ -1,4 +1,11 @@
-﻿#if UNITY_EDITOR
+﻿///Author: seyahdoo(Seyyid Ahmed Doğan) 
+///github: github.com/seyahdoo
+///email : contact@seyahdoo.com
+///
+///see my other reusable unity codes at
+///https://github.com/seyahdoo/Unity-Code-Repo
+
+#if UNITY_EDITOR
 
 using UnityEngine;
 using UnityEditor;
