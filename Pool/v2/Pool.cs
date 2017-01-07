@@ -11,7 +11,10 @@
 
 using UnityEngine;
 using System.Collections.Generic;
+
+#if UNITY_EDITOR
 using UnityEditor;
+#endif
 
 
 /// <summary>
@@ -281,6 +284,8 @@ namespace seyahdoo.pooling
 
     }
 
+ #if UNITY_EDITOR
+    
     /// <summary>
     /// A small window for pool controll
     /// </summary>
@@ -338,4 +343,7 @@ namespace seyahdoo.pooling
 
 
     }
+ 
+#endif
+ 
 }
