@@ -42,6 +42,7 @@ namespace seyahdoo.fadevr
         [SerializeField]
         private Color fadeColor = new Color(0.0f, 0.0f, 0.0f, 0.0f);
 
+        //[SerializeField]
         private Material fadeMaterial = null;
 
         private bool fading = false;
@@ -53,10 +54,9 @@ namespace seyahdoo.fadevr
 
         void Awake()
         {
-            fadeMaterial = new Material(Shader.Find("Unlit/Transparent HUD (ScreenFader)"));
+            fadeMaterial = new Material(Shader.Find("Oculus/Unlit Transparent Color"));
             fadeMaterial.color = fadeColor;
             AddCameraControlls();
-
         }
 
         void AddCameraControlls()
@@ -111,14 +111,13 @@ namespace seyahdoo.fadevr
         private class ScreenFadeControl : MonoBehaviour
         {
             public Material fadeMaterial = null;
-
-            // Based on OVRScreenFade
-#if UNITY_ANDROID && !UNITY_EDITOR
-	void OnCustomPostRender()
-#else
+            
+            /// <summary>
+            /// Renders the fade overlay when attached to a camera object
+            /// </summary>
             void OnPostRender()
-#endif
             {
+                
                 fadeMaterial.SetPass(0);
                 GL.PushMatrix();
                 GL.LoadOrtho();
@@ -130,7 +129,10 @@ namespace seyahdoo.fadevr
                 GL.Vertex3(1f, 0f, -12f);
                 GL.End();
                 GL.PopMatrix();
+                
             }
+
+
         }
 
         /// <summary>
