@@ -5,8 +5,8 @@
 *
 * 
 * @author  Seyyid Ahmed Doğan (seyahdoo)
-* @version 2.2.0
-* @since   2017-01-07
+* @version 2.3.1
+* @since   2017-03-30
 */
 
 using UnityEngine;
