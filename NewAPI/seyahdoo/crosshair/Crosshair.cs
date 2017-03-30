@@ -7,6 +7,7 @@
 
 ///Changelog:
 ///30.03.2017 -> Created by seyahdoo
+///31.03.2017 -> Added Layermask to raycast
 
 ///usage:
 ///Attach to any camera or pointer and this will trigger CrosshairAware objects
@@ -61,13 +62,18 @@ namespace seyahdoo.crosshair
         private CrosshairAware _crosshairAware;
         private Collider _lastCollider;
 
+        /// <summary>
+        /// What layer to look for?
+        /// </summary>
+        public LayerMask layerMask = -1; //Default to everything
+
         void Update()
         {
             //do the raycasting
             RaycastHit hit;
 
             //if i found something
-            if (Physics.Raycast(transform.position, transform.TransformDirection(Vector3.forward), out hit))
+            if (Physics.Raycast(transform.position, transform.TransformDirection(Vector3.forward), out hit,float.MaxValue,layerMask))
             {
                 //did i found a new thing?
                 if(_lastCollider != hit.collider)
