@@ -376,23 +376,13 @@ namespace seyahdoo.pooling
             if (Selection.activeGameObject)
             {
                 //i didnt like this code :(
+                //i think i fixed the love issue here
                 if (GUILayout.Button("Pool.Release(Selected)"))
                 {
-                    List<GameObject> toLook = new List<GameObject>(Selection.gameObjects);
-                    List<GameObject> toDestroy = new List<GameObject>(Selection.gameObjects);
 
-                    //foreach (GameObject go in toLook)
-                    //{
-                    //    if (go.transform.parent)
-                    //    {
-                    //        if (toDestroy.Contains(go.transform.parent.gameObject))
-                    //        {
-                    //            toDestroy.Remove(go);
-                    //        }
-                    //    }
-                    //
-                    //}
-                    foreach (var item in toDestroy)
+                    List<GameObject> toRelease = new List<GameObject>(Selection.gameObjects);
+                    
+                    foreach (var item in toRelease)
                     {
                         item.Release();
                     }
