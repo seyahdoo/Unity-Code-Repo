@@ -8,22 +8,22 @@ namespace seyahdoo.crosshair.examples
     /// <summary>
     /// Crosshair example cube script, will go blue if stared by crosshair
     /// </summary>
-    [RequireComponent (typeof (CrosshairAware))]
+    [RequireComponent (typeof (Target))]
     [RequireComponent (typeof (MeshRenderer))]
     public class ColorChangingCube : MonoBehaviour
     {
 
-        private CrosshairAware ca;
+        private Target target;
         private Material m;
 
         void Awake()
         {
 
             m = GetComponent<MeshRenderer>().material;
-            ca = GetComponent<CrosshairAware>();
+            target = GetComponent<Target>();
 
-            ca.FocusOnEvent += ColorBlue;
-            ca.FocusOffEvent += ColorRed;
+            target.FocusOnEvent += ColorBlue;
+            target.FocusOffEvent += ColorRed;
         }
 
         void ColorBlue()

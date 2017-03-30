@@ -7,6 +7,7 @@
 
 ///Changelog:
 ///30.03.2017 -> Created by seyahdoo
+///31.03.2017 -> Renamed to Target from CrosshairAware
 
 ///usage:
 ///Attach to any object and then you can watch HasFocus property or subscribe to FocusOnEvent and FocusOffEvent
@@ -25,7 +26,7 @@ namespace seyahdoo.crosshair
     /// You can also derive a class from this and use as such.
     /// </summary>
     [RequireComponent (typeof (Collider))]
-    public class CrosshairAware : MonoBehaviour
+    public class Target : MonoBehaviour
     {
 
         private bool _hasFocus = false;
@@ -45,7 +46,7 @@ namespace seyahdoo.crosshair
 
         /// <summary>
         /// object just get focused event
-        /// Usage: crosshairAware.FocusOnEvent += MethodToSubscribe;
+        /// Usage: target.FocusOnEvent += MethodToSubscribe;
         /// </summary>
         public event VoidDelegate FocusOnEvent;
 
@@ -56,7 +57,7 @@ namespace seyahdoo.crosshair
 
         /// <summary>
         /// object just get unfocused event
-        /// Usage: crosshairAware.FocusOffEvent += MethodToSubscribe;
+        /// Usage: target.FocusOffEvent += MethodToSubscribe;
         /// </summary>
         public event VoidDelegate FocusOffEvent;
 

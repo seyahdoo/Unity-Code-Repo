@@ -59,7 +59,7 @@ namespace seyahdoo.crosshair
 
         }
 
-        private CrosshairAware _crosshairAware;
+        private Target _target;
         private Collider _lastCollider;
 
         /// <summary>
@@ -96,14 +96,14 @@ namespace seyahdoo.crosshair
         void focusToCollider(Collider collider)
         {
             //if i was focused to anything im not focused anymore
-            if (_crosshairAware)
+            if (_target)
             {
                 ///Dont bug me about its being obsolete! i maid it!
                 #pragma warning disable 612, 618
-                _crosshairAware.setFocus(false);
+                _target.setFocus(false);
                 #pragma warning restore 612, 618
 
-                _crosshairAware = null;
+                _target = null;
             }
 
             //im not hitting anything
@@ -112,15 +112,15 @@ namespace seyahdoo.crosshair
             //if im not looking to nothingness
             if (collider)
             {
-                //im checking if this collider is Crosshair Aware?
-                _crosshairAware = collider.gameObject.GetComponent<CrosshairAware>();
+                //im checking if this collider is a Target?
+                _target = collider.gameObject.GetComponent<Target>();
 
                 //if so, im focused to that
-                if (_crosshairAware)
+                if (_target)
                 {
                     ///Dont bug me about its being obsolete! i maid it!
                     #pragma warning disable 612, 618
-                    _crosshairAware.setFocus(true);
+                    _target.setFocus(true);
                     #pragma warning restore 612, 618
                 }
             }

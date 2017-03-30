@@ -6,10 +6,10 @@ using UnityEngine;
 namespace seyahdoo.crosshair.examples
 {
     /// <summary>
-    /// Simple Crosshair Aware cube, will go green if stared by Crosshair
+    /// Simple Crosshair Target cube, will go green if stared by Crosshair
     /// </summary>
     [RequireComponent (typeof (MeshRenderer))]
-    public class ColorCubeDerived : CrosshairAware
+    public class ColorCubeDerived : Target
     {
 
         Material m;
