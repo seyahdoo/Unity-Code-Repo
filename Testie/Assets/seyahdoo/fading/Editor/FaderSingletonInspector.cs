@@ -7,28 +7,30 @@
 
 using UnityEngine;
 using UnityEditor;
-using seyahdoo.fadevr;
+using seyahdoo.fading.singleton;
 
 
 /// <summary>
 /// A custom inspector script for fancy controll buttons
 /// </summary>
-[CustomEditor(typeof(Fader))]
-public class FaderInspector : Editor
+[CustomEditor(typeof(FaderSingletonInspector))]
+public class FaderSingletonInspector : Editor
 {
 
     public override void OnInspectorGUI()
     {
         DrawDefaultInspector();
-        
+
+        FaderSingleton fader = (FaderSingleton)target;
+
         if (GUILayout.Button("FadeIn"))
         {
-            Fader.FadeIn();
+            fader.FadeIn();
         }
 
         if (GUILayout.Button("FadeOut"))
         {
-            Fader.FadeOut();
+            fader.FadeOut();
         }
 
 
