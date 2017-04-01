@@ -22,8 +22,9 @@ namespace seyahdoo.crosshair.examples
             m = GetComponent<MeshRenderer>().material;
             target = GetComponent<Target>();
 
-            target.FocusOnEvent += ColorBlue;
-            target.FocusOffEvent += ColorRed;
+            target.FocusOnEvent.AddListener(ColorBlue);
+            target.FocusOffEvent.AddListener(ColorRed);
+
         }
 
         void ColorBlue()

@@ -8,11 +8,11 @@
 using System.Collections;
 using UnityEngine;
 
-namespace seyahdoo.fadevr.test
+namespace seyahdoo.fading.test
 {
 
     /// <summary>
-    /// Attach it to something to test "seyahdoo.fadevr.Fader"
+    /// Attach it to something to test "seyahdoo.fading.fade"
     /// J-> auto test
     /// k-> fadein
     /// l-> fadeout
@@ -52,36 +52,48 @@ namespace seyahdoo.fadevr.test
                 }
             }
             
-
-
         }
         
+        public void FadeOut()
+        {
+            Fader.FadeOut();
+        }
+
+        public void FadeIn()
+        {
+            Fader.FadeIn();
+        }
+
         //maybe usable
         void Start()
         {
-            //Fader.CreateInstance();
+            //Fader.Instance.CreateInstance();
             //StartCoroutine(doit());
         }
 
         IEnumerator AutoTest()
         {
             testRunning = true;
-            Debug.Log("FaderTestie -> Auto Test Started");
+            Debug.Log("Fader.InstanceTestie -> Auto Test Started");
 
-            //Fader.CreateInstance();
+            //Fader.Instance.CreateInstance();
             Fader.FadeOut(1);
             yield return new WaitForSeconds(2f);
             Fader.FadeIn(4);
             yield return new WaitForSeconds(2f);
+            Fader.SetFadeColor(Color.blue);
             Fader.FadeOut(1);
             yield return new WaitForSeconds(2f);
-            Fader.FadeIn(4);
+            Fader.FadeIn(2);
             yield return new WaitForSeconds(2f);
+            Fader.SetFadeColor(Color.black);
             Fader.FadeOut(1);
             yield return new WaitForSeconds(2f);
-            Fader.FadeIn(4);
+            Fader.FadeIn(2);
             yield return new WaitForSeconds(2f);
             Fader.FadeOut(1);
+
+            Fader.FadeIn();
 
             Debug.Log("FaderTestie -> Auto Test finished");
             testRunning = false;

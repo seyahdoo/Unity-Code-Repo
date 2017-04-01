@@ -16,6 +16,7 @@
 ///seyahdoo.crosshair.Crosshair
 
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace seyahdoo.crosshair
 {
@@ -46,9 +47,10 @@ namespace seyahdoo.crosshair
 
         /// <summary>
         /// object just get focused event
-        /// Usage: target.FocusOnEvent += MethodToSubscribe;
+        /// Usage: target.FocusOffEvent.AddListener(MethodName);
+
         /// </summary>
-        public event VoidDelegate FocusOnEvent;
+        public UnityEvent FocusOnEvent;
 
         /// <summary>
         /// Override me
@@ -57,17 +59,16 @@ namespace seyahdoo.crosshair
 
         /// <summary>
         /// object just get unfocused event
-        /// Usage: target.FocusOffEvent += MethodToSubscribe;
+        /// Usage: target.FocusOffEvent.AddListener(MethodName);
         /// </summary>
-        public event VoidDelegate FocusOffEvent;
-
+        public UnityEvent FocusOffEvent;
+        
         /// <summary>
         /// Override me
         /// </summary>
         virtual protected void FocusOff() { }
 
-        [System.Obsolete("Do not use setFocus method. It's internal. It is not ment to be used publicly")]
-        internal void setFocus(bool value)
+        public void setFocus(bool value)
         {
             //Nothing to change? Cool.
             if (_hasFocus == value) return;
@@ -82,16 +83,16 @@ namespace seyahdoo.crosshair
                 FocusOn();
 
                 //external events
-                if (FocusOnEvent != null)
-                    FocusOnEvent();
+                FocusOnEvent.Invoke();
+
             }else
             {
                 //internal event
                 FocusOff();
 
                 //external events
-                if (FocusOffEvent != null)
-                    FocusOffEvent();
+                FocusOffEvent.Invoke();
+
             }
             
         }

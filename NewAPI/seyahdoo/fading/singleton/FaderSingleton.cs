@@ -11,29 +11,26 @@
 ///Edited so that you can use it as a static service in game
 
 ///usage:
-///seyahdoo.fadevr.Fader.CreateInstance();
-///seyahdoo.fadevr.Fader.SetDefaultFadeDuration(float duration);
-///seyahdoo.fadevr.Fader.FadeOut();
-///seyahdoo.fadevr.Fader.FadeIn();
+///seyahdoo.fading.Fader.CreateInstance();
+///seyahdoo.fading.Fader.SetDefaultFadeDuration(float duration);
+///seyahdoo.fading.Fader.SetFadeColor(Color.black);
+///seyahdoo.fading.Fader.FadeOut();
+///seyahdoo.fading.Fader.FadeIn();
 
 ///Dependancies:
 ///Unity singleton script
-///https://github.com/seyahdoo/Unity-Code-Repo/blob/master/Singleton/Singleton.cs
+///https://github.com/seyahdoo/Unity-Code-Repo/blob/master/Testie/Assets/seyahdoo/other/Singleton.cs
 
 
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace seyahdoo.fadevr
+namespace seyahdoo.fading.singleton
 {
-    /// <summary>
-    /// usage:
-    /// seyahdoo.fadevr.Fader.CreateInstance();
-    /// seyahdoo.fadevr.Fader.FadeOut();
-    /// seyahdoo.fadevr.Fader.FadeIn();
-    /// </summary>
-    public class Fader : other.Singleton<Fader>
+    
+
+    public class FaderSingleton : other.Singleton<FaderSingleton>
     {
         
         [SerializeField]
@@ -42,19 +39,18 @@ namespace seyahdoo.fadevr
         [SerializeField]
         private Color fadeColor = new Color(0.0f, 0.0f, 0.0f, 0.0f);
 
-        //[SerializeField]
         private Material fadeMaterial = null;
 
         private bool fading = false;
 		private float desiredAlpha;
-        private float fadeDuration = 2.0f;
+        protected float fadeDuration = 2.0f;
 
         
         private List<ScreenFadeControl> fadeControls = new List<ScreenFadeControl>();
 
         void Awake()
         {
-            fadeMaterial = new Material(Shader.Find("Oculus/Unlit Transparent Color"));
+            fadeMaterial = new Material(Shader.Find("Seyahdoo/Unlit Transparent Color"));
             fadeMaterial.color = fadeColor;
             AddCameraControlls();
         }
@@ -111,13 +107,18 @@ namespace seyahdoo.fadevr
         private class ScreenFadeControl : MonoBehaviour
         {
             public Material fadeMaterial = null;
+
             
-            /// <summary>
+            // <summary>
             /// Renders the fade overlay when attached to a camera object
+            /// Based on OVRScreenFade
             /// </summary>
+#if UNITY_ANDROID && !UNITY_EDITOR
+	void OnCustomPostRender()
+#else
             void OnPostRender()
+#endif
             {
-                
                 fadeMaterial.SetPass(0);
                 GL.PushMatrix();
                 GL.LoadOrtho();
@@ -129,7 +130,6 @@ namespace seyahdoo.fadevr
                 GL.Vertex3(1f, 0f, -12f);
                 GL.End();
                 GL.PopMatrix();
-                
             }
 
 
@@ -139,53 +139,53 @@ namespace seyahdoo.fadevr
         /// make it bright
         /// </summary>
         /// <param name="duration">Animation duration as seconds</param>
-        public static void FadeIn(float duration)
+        public void FadeIn(float duration)
         {
-            Instance.fadeDuration = duration;
-			Instance.desiredAlpha = 0f;
-            if(!Instance.fading) Instance.StartCoroutine(Instance.DoFade());
+            fadeDuration = duration;
+            desiredAlpha = 0f;
+            if (!fading) StartCoroutine(DoFade());
         }
 
         /// <summary>
         /// make it bright
         /// </summary>
         /// <param name="duration">Animation duration as seconds</param>
-        public static void FadeIn()
+        public void FadeIn()
         {
-            Instance.fadeDuration = Instance.defaultFadeDuration;
-            Instance.desiredAlpha = 0f;
-            if (!Instance.fading) Instance.StartCoroutine(Instance.DoFade());
+            fadeDuration = defaultFadeDuration;
+            desiredAlpha = 0f;
+            if (!fading) StartCoroutine(DoFade());
         }
 
         /// <summary>
         /// make it dark
         /// </summary>
         /// <param name="duration">Animation duration as seconds</param>
-        public static void FadeOut(float duration)
+        public void FadeOut(float duration)
         {
-            Instance.fadeDuration = duration;
-            Instance.desiredAlpha = 1f;
-            if (!Instance.fading) Instance.StartCoroutine(Instance.DoFade());
+            fadeDuration = duration;
+            desiredAlpha = 1f;
+            if (!fading) StartCoroutine(DoFade());
         }
 
         /// <summary>
         /// make it dark
         /// </summary>
         /// <param name="duration">Animation duration as seconds</param>
-        public static void FadeOut()
+        public void FadeOut()
         {
-            Instance.fadeDuration = Instance.defaultFadeDuration;
-            Instance.desiredAlpha = 1f;
-            if (!Instance.fading) Instance.StartCoroutine(Instance.DoFade());
+            fadeDuration = defaultFadeDuration;
+            desiredAlpha = 1f;
+            if (!fading) StartCoroutine(DoFade());
         }
 
         /// <summary>
-        /// Sets default fading duration for instance
+        /// Sets default fading duration for Instance
         /// </summary>
         /// <param name="duration"></param>
-        public static void SetDefaultFadeDuration(float duration)
+        public void SetDefaultFadeDuration(float duration)
         {
-            Instance.defaultFadeDuration = duration;
+            defaultFadeDuration = duration;
         }
 
         /// <summary>
@@ -194,12 +194,12 @@ namespace seyahdoo.fadevr
         /// (1,1,1) is white
         /// </summary>
         /// <param name="color"></param>
-        public static void SetFadeColor(Color color)
+        public void SetFadeColor(Color color)
         {
             //Dont lose alpha
-            color.a = Instance.fadeColor.a;
+            color.a = fadeColor.a;
 
-            Instance.fadeColor = color;
+            fadeColor = color;
         }
 
         /// <summary>
@@ -207,28 +207,31 @@ namespace seyahdoo.fadevr
         /// </summary>
         public static void CreateInstance()
         {
-            Instance.fadeDuration = 1f;
+            if (!Instance)
+            {
+                Debug.LogError("Something is seriously WRONG about fade class");
+            }
         }
 
         /// <summary>
         /// Sometimes you gonna wanna change your cameras, use this after you change them
         /// </summary>
-        public static void UpdateActiveCameras()
+        public void UpdateActiveCameras()
         {
-            Instance.AddCameraControlls();
+            AddCameraControlls();
         }
 
         /// <summary>
         /// is fading in progress?
         /// </summary>
-        public static bool IsFading
+        public bool IsFading
         {
             get
             {
-                return Instance.fading;
+                return fading;
             }
         }
-        
+
 
     }
 
