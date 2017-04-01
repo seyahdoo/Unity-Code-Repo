@@ -5,7 +5,7 @@ using UnityEngine;
 namespace seyahdoo.controlls
 {
 
-    public class SuperSimpleMouseCameraRotator : MonoBehaviour
+    public class MouseLookSimple : MonoBehaviour
     {
 
         public float Sensivity = 2f;
