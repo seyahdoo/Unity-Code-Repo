@@ -103,22 +103,17 @@ namespace seyahdoo.fading.singleton
 
             fading = false;
         }
-        
+
         private class ScreenFadeControl : MonoBehaviour
         {
             public Material fadeMaterial = null;
 
-            
-            // <summary>
+            /// <summary>
             /// Renders the fade overlay when attached to a camera object
-            /// Based on OVRScreenFade
             /// </summary>
-#if UNITY_ANDROID && !UNITY_EDITOR
-	void OnCustomPostRender()
-#else
             void OnPostRender()
-#endif
             {
+
                 fadeMaterial.SetPass(0);
                 GL.PushMatrix();
                 GL.LoadOrtho();
@@ -130,6 +125,7 @@ namespace seyahdoo.fading.singleton
                 GL.Vertex3(1f, 0f, -12f);
                 GL.End();
                 GL.PopMatrix();
+
             }
 
 
