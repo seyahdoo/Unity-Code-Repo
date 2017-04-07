@@ -13,7 +13,7 @@ namespace seyahdoo.crosshair.examples
     {
 
         Material m;
-
+        
         void Awake()
         {
             m = GetComponent<MeshRenderer>().material;
@@ -28,6 +28,7 @@ namespace seyahdoo.crosshair.examples
             m.color = Color.red;
         }
 
+        
 
     }
 

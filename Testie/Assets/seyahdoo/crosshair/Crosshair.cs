@@ -13,7 +13,7 @@
 ///Attach to any camera or pointer and this will trigger CrosshairAware objects
 
 ///Dependancies:
-///None
+///seyahdoo.crosshair.Target (For it to be useful of course!?)
 
 
 using UnityEngine;
@@ -26,16 +26,30 @@ namespace seyahdoo.crosshair
     /// </summary>
     public class Crosshair : MonoBehaviour
     {
-
+        /// <summary>
+        /// Am i setted up?
+        /// </summary>
+        private static bool IsSettedUp
+        {
+            get
+            {
+                if (GameObject.FindObjectOfType<Crosshair>())
+                    return true;
+                else
+                    return false;
+            }
+        }
 
         /// <summary>
         /// Call this if you are not sure crosshair is not setted up
         /// </summary>
         public static void SetupCrosshair(Camera camera)
         {
-
-            //Maybe setup a grosshair image? (i just found this typo... and i wont fix it :D)
-            SetupCrosshair(camera.gameObject);
+            //Maybe setup a grosshair image? <- (i just found this typo... and i wont fix it :D)
+            if (!camera)
+                Debug.LogError(typeof(Crosshair).Name + " -> SetupCrosshair(Camera) -> camera cant be null");
+            else
+                SetupCrosshair(camera.gameObject);
             
         }
         
@@ -44,7 +58,10 @@ namespace seyahdoo.crosshair
         /// </summary>
         public static void SetupCrosshair(GameObject go)
         {
-            go.AddComponent<Crosshair>();
+            if (!go)
+                Debug.LogError(typeof(Crosshair).Name + " -> SetupCrosshair(GameObject) -> gameobject cant be null");
+            else
+                go.AddComponent<Crosshair>();
         }
 
         /// <summary>
@@ -52,14 +69,19 @@ namespace seyahdoo.crosshair
         /// </summary>
         public static void SetupCrosshair()
         {
-            foreach (Camera cam in Camera.allCameras)
-            {
-                SetupCrosshair(cam);
-            }
-
+            if (!FindObjectOfType<Crosshair>())
+                SetupCrosshair(Camera.main);
+            else
+                Debug.Log("Crosshair is already setted up?");
         }
 
+        /// <summary>
+        /// target that im focused
+        /// </summary>
         private Target _target;
+        /// <summary>
+        /// collider that im focused
+        /// </summary>
         private Collider _lastCollider;
 
         /// <summary>
@@ -132,3 +154,5 @@ namespace seyahdoo.crosshair
 
 
 }
+
+

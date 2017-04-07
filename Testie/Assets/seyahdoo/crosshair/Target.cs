@@ -62,12 +62,28 @@ namespace seyahdoo.crosshair
         /// Usage: target.FocusOffEvent.AddListener(MethodName);
         /// </summary>
         public UnityEvent FocusOffEvent;
-        
+
         /// <summary>
         /// Override me
         /// </summary>
         virtual protected void FocusOff() { }
 
+        /// <summary>
+        /// object just get unfocused event
+        /// Usage: target.FocusOffEvent.AddListener(MethodName);
+        /// </summary>
+        public UnityEvent FocusStayEvent;
+
+        /// <summary>
+        /// Override me
+        /// </summary>
+        virtual protected void FocusStay() { }
+
+        
+        /// <summary>
+        /// Sets the focus to a certain value. Written for Crosshair script's usage.
+        /// </summary>
+        /// <param name="value">true->focus is on me</param>
         public void setFocus(bool value)
         {
             //Nothing to change? Cool.
@@ -79,6 +95,8 @@ namespace seyahdoo.crosshair
             //trigger events
             if (value)
             {
+                justnotfocused = false; //jusfocused = true;
+
                 //internal event
                 FocusOn();
 
@@ -96,7 +114,33 @@ namespace seyahdoo.crosshair
             }
             
         }
-        
+
+        private bool justnotfocused = false;
+
+        /// <summary>
+        /// Carefully override this, or else FocusStay events wont work!
+        /// use base.Update(); as the first line of overriden function
+        /// </summary>
+        virtual protected void Update()
+        {
+            if (_hasFocus)
+            {
+                if (justnotfocused)
+                {
+                    //internal event
+                    FocusStay();
+
+                    //external events
+                    FocusStayEvent.Invoke();
+                }
+                else
+                {
+                    justnotfocused = false;
+                }
+
+            }
+        }
+
     }
 
 
