@@ -20,10 +20,11 @@ using UnityEngine;
 
 namespace seyahdoo.crosshair
 {
-    
+
     /// <summary>
     /// Attach this to a camera, and it will do its stuff
     /// </summary>
+    [AddComponentMenu("Seyahdoo/Crosshair/Crosshair")]
     public class Crosshair : MonoBehaviour
     {
         /// <summary>

@@ -26,6 +26,7 @@ namespace seyahdoo.crosshair
     /// Or you can subscribe to FocusOnEvent and FocusOffEvent.
     /// You can also derive a class from this and use as such.
     /// </summary>
+    [AddComponentMenu("Seyahdoo/Crosshair/Target")]
     [RequireComponent (typeof (Collider))]
     public class Target : MonoBehaviour
     {

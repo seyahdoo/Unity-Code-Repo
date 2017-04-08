@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace seyahdoo.controlls
 {
-
+    [AddComponentMenu("Seyahdoo/Controlls/MouseLookSimple")]
     public class MouseLookSimple : MonoBehaviour
     {
 
