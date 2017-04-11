@@ -5,7 +5,14 @@
 /[Bb]uilds/
 /Assets/AssetStoreTools*
 /Assets/PlayMaker/
-/Assets/Itween
+/Assets/iTween/
+/Assets/Gizmos/
+/Assets/Plugins/
+/Assets/Gizmos.meta
+/Assets/iTween.meta
+/Assets/Plugins.meta
+/Assets/PlayMaker.meta
+
 
 # Visual Studio 2015 cache directory
 /.vs/
