@@ -51,9 +51,9 @@ namespace seyahdoo.crosshair
                 Debug.LogError(typeof(Crosshair).Name + " -> SetupCrosshair(Camera) -> camera cant be null");
             else
                 SetupCrosshair(camera.gameObject);
-            
+
         }
-        
+
         /// <summary>
         /// Call this if you are not sure crosshair is not setted up
         /// </summary>
@@ -96,10 +96,10 @@ namespace seyahdoo.crosshair
             RaycastHit hit;
 
             //if i found something
-            if (Physics.Raycast(transform.position, transform.TransformDirection(Vector3.forward), out hit,float.MaxValue,layerMask))
+            if (Physics.Raycast(transform.position, transform.TransformDirection(Vector3.forward), out hit, float.MaxValue, layerMask))
             {
                 //did i found a new thing?
-                if(_lastCollider != hit.collider)
+                if (_lastCollider != hit.collider)
                 {
                     //i should focus to that
                     focusToCollider(hit.collider);
@@ -108,7 +108,12 @@ namespace seyahdoo.crosshair
             else
             {
                 //im not hitting anything, i should focus to nothing
-                focusToCollider(null);
+                //unless im already focused to nothing
+                if (_lastCollider != null)
+                {
+                    focusToCollider(null);
+                }
+
             }
         }
 
@@ -122,14 +127,14 @@ namespace seyahdoo.crosshair
             if (_target)
             {
                 ///Dont bug me about its being obsolete! i maid it!
-                #pragma warning disable 612, 618
+#pragma warning disable 612, 618
                 _target.setFocus(false);
-                #pragma warning restore 612, 618
+#pragma warning restore 612, 618
 
                 _target = null;
             }
 
-            //im not hitting anything
+            //if im not hitting anything, will be null
             _lastCollider = collider;
 
             //if im not looking to nothingness
@@ -142,9 +147,9 @@ namespace seyahdoo.crosshair
                 if (_target)
                 {
                     ///Dont bug me about its being obsolete! i maid it!
-                    #pragma warning disable 612, 618
+#pragma warning disable 612, 618
                     _target.setFocus(true);
-                    #pragma warning restore 612, 618
+#pragma warning restore 612, 618
                 }
             }
 

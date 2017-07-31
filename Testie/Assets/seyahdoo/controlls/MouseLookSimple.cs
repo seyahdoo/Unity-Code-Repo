@@ -1,5 +1,19 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿///Author: seyahdoo(Seyyid Ahmed Doğan) 
+///github: github.com/seyahdoo
+///email : contact@seyahdoo.com
+///
+///see my other reusable unity codes at
+///https://github.com/seyahdoo/Unity-Code-Repo
+
+///Changelog:
+///XX.XX.XXXX -> Created by seyahdoo
+
+///usage:
+///Attach to any camera
+
+///Dependancies:
+///None
+
 using UnityEngine;
 
 namespace seyahdoo.controlls

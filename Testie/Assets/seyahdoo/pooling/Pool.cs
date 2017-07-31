@@ -27,6 +27,29 @@ namespace seyahdoo.pooling
     public static class Pool
     {
 
+        public static Transform PoolRoot
+        {
+            get
+            {
+                if (!_poolRoot)
+                {
+                    GameObject go = GameObject.Find("PoolRoot");
+
+                    if (!go)
+                    {
+                        go = new GameObject("PoolRoot");
+                    }
+
+                    _poolRoot = go.transform;
+                    
+                }
+
+                return _poolRoot;
+            }
+        }
+
+        private static Transform _poolRoot;
+
         private static Dictionary<string, Setting> _settingDictionary = new Dictionary<string, Setting>();
         private static Dictionary<string, Cache> _cacheDictionary = new Dictionary<string, Cache>();
 
@@ -260,6 +283,9 @@ namespace seyahdoo.pooling
                 {
                     GameObject go = GameObject.Instantiate(original);
                     go.name = original.name;
+
+                    go.transform.SetParent(PoolRoot);
+
                     go.SetActive(false);
                     stack.Push(go);
                 }
@@ -282,6 +308,8 @@ namespace seyahdoo.pooling
                     go.SetActive(true);
                     active.Add(go);
 
+                    go.transform.SetParent(null);
+
                     return go;
                 }
 
@@ -292,6 +320,8 @@ namespace seyahdoo.pooling
             {
                 active.Remove(go);
 
+                go.transform.SetParent(PoolRoot);
+
                 go.SetActive(false);
                 stack.Push(go);
             }
@@ -300,6 +330,8 @@ namespace seyahdoo.pooling
             {
                 foreach (GameObject go in active)
                 {
+                    go.transform.SetParent(PoolRoot);
+
                     go.SetActive(false);
                     stack.Push(go);   
                 }

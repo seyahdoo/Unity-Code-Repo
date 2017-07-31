@@ -1,4 +1,20 @@
-﻿using UnityEngine;
+﻿///Author: seyahdoo(Seyyid Ahmed Doğan) 
+///github: github.com/seyahdoo
+///email : contact@seyahdoo.com
+///
+///see my other reusable unity codes at
+///https://github.com/seyahdoo/Unity-Code-Repo
+
+///Changelog:
+///XX.XX.XXXX -> Copied from internet, source: http://wiki.unity3d.com/index.php?title=ReverseNormals
+
+///usage:
+///Attach to any 2d object
+
+///Dependancies:
+///None
+
+using UnityEngine;
 using System.Collections;
 
 namespace seyahdoo.other

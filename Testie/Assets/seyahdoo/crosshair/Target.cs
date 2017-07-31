@@ -136,7 +136,7 @@ namespace seyahdoo.crosshair
                 }
                 else
                 {
-                    justnotfocused = false;
+                    justnotfocused = true;
                 }
 
             }
