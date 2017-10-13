@@ -9,6 +9,7 @@
 ///Created by oculus engineers in OVRScreenFade class
 ///Edited by eVRydayVR -> https://evrydayvr.wordpress.com/2015/07/15/unity-5-x-package-fade-screen-inout/
 ///Edited so that you can use it as a static service in game
+///Fixed "scene change camera null" bug
 
 ///usage:
 ///seyahdoo.fading.Fader.CreateInstance();
@@ -76,7 +77,15 @@ namespace seyahdoo.fading.singleton
         void SetFadersEnabled(bool value)
         {
             foreach (ScreenFadeControl fadeControl in fadeControls)
+            {
+                if(fadeControl == null)
+                {
+                    AddCameraControlls();
+                    SetFadersEnabled(value);
+                    return;
+                }
                 fadeControl.enabled = value;
+            }
         }
         
         private IEnumerator DoFade()

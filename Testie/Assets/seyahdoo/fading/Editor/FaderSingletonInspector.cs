@@ -13,7 +13,7 @@ using seyahdoo.fading.singleton;
 /// <summary>
 /// A custom inspector script for fancy controll buttons
 /// </summary>
-[CustomEditor(typeof(FaderSingletonInspector))]
+[CustomEditor(typeof(FaderSingleton))]
 public class FaderSingletonInspector : Editor
 {
 
