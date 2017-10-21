@@ -1,9 +1,9 @@
-﻿using seyahdoo.crosshair;
+﻿using seyahdoo.crosshairV1;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace seyahdoo.crosshair.examples
+namespace seyahdoo.crosshairV1
 {
     /// <summary>
     /// Simple Crosshair Target cube, will go green if stared by Crosshair
