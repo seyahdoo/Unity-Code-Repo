@@ -52,7 +52,9 @@ Now component works with RichText. You need to remember to turn on RichText via 
 and turn on component's [useRichText] checkbox.
 */
 
-namespace UnityEngine.UI
+using UnityEngine.UI;
+
+namespace seyahdoo.legacy
 {
     [AddComponentMenu("UI/Effects/Letter Spacing", 15)]
 

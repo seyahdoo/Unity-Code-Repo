@@ -19,7 +19,7 @@ using UnityEditor;
 /// <summary>
 /// Just a big namespace for my big pooling system
 /// </summary>
-namespace seyahdoo.pooling
+namespace seyahdoo.pooling.v2
 {
     /// <summary>
     /// A General API for pooling GameObjects
