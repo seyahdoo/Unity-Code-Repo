@@ -5,303 +5,307 @@
 *
 * 
 * @author  Seyyid Ahmed Doğan (seyahdoo)
-* @version 2.3.1
-* @since   2017-03-30
+* @version 3.0.0
+* @since   2018-10-23
 */
 
-using UnityEngine;
+using System;
 using System.Collections.Generic;
-
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
+using UnityEngine;
 
 /// <summary>
-/// Just a big namespace for my big pooling system
+/// Version 3 of seyahdoo general pool system
 /// </summary>
-namespace seyahdoo.pooling
+namespace seyahdoo.pooling.v3
 {
     /// <summary>
-    /// A General API for pooling GameObjects
+    /// A General API for pooling Components
     /// </summary>
-    public static class Pool
+    public class Pool
     {
 
-        private static Dictionary<string, Setting> _settingDictionary = new Dictionary<string, Setting>();
-        private static Dictionary<string, Cache> _cacheDictionary = new Dictionary<string, Cache>();
+        #region PoolRoot
 
         /// <summary>
-        /// Gets an object from pool regarding its name. Object prefab must be located at /Assets/Resources/Prefabs/[Name]
+        /// Root object to keep all pool GameObjects
         /// </summary>
-        /// <param name="Name">Name of the object you want to get</param>
-        /// <returns></returns>
-        public static GameObject Get(string Name)
+        private static Transform PoolRoot
         {
-
-            //if that particular object does not have an setting create a default one
-            if (!_settingDictionary.ContainsKey(Name))
+            get
             {
-                _settingDictionary.Add(Name, new Setting());
-            }
-
-            //if it is to be pooled, do the trick.
-            if (_settingDictionary[Name].IsPooled)
-            {
-                //Create Cache if not yet cached
-                if (!_cacheDictionary.ContainsKey(Name))
+                if (_poolRoot)
                 {
-                    //Load that particular GameObject Prefab from "Resources/Prefabs/[Name]"
-                    GameObject go = (GameObject)Resources.Load("Prefabs/" + Name, typeof(GameObject));
-                    if (!go)
-                    {
-                        //Dont forget to yell the error!!!
-                        Debug.LogError("Error: No Pool nor Prefab for such object named '" + Name + "'. Returning error recognizer!");
-
-                        //return an object that yells i have an error!!!
-                        return createErrorObject(Name);
-                    }
-                    else
-                    {
-                        //There it is. Original one, create a Cache for it.
-                        Cache cache = new Cache(go, _settingDictionary[Name].InitialSize);
-
-                        //And Add it to the dictionary
-                        _cacheDictionary.Add(Name, cache);
-                    }
-
-
-                }
-
-                //And Finally Do The POOL
-                return _cacheDictionary[Name].Pop();
-            }
-            else
-            {
-                //i dont want to create a Cache for it, just make a new one and send it to user.
-                GameObject go = (GameObject)Resources.Load("Prefabs/" + Name, typeof(GameObject));
-                if (!go)
-                {
-                    //Dont forget to yell the error!!!
-                    Debug.LogError("Error: No Pool nor Prefab for such object named '" + Name + "'. Returning error recognizer!");
-
-                    //return an object that yells i have an error!!!
-                    return createErrorObject(Name);
+                    return _poolRoot;
                 }
                 else
                 {
-                    //Create a new object from original
-                    GameObject created = GameObject.Instantiate(go);
+                    GameObject go = GameObject.Find("PoolRoot");
 
-                    //Get rid of from "(clone)"
-                    created.name = Name;
+                    if (!go)
+                    {
+                        go = new GameObject("PoolRoot");
+                    }
 
-                    //return safely
-                    return created;
+                    _poolRoot = go.transform;
+                    return _poolRoot;
                 }
 
             }
-
         }
 
-        /// <summary>
-        /// Releases the object you once get from Pool. If it doesnt belong to a pool, it will be destroyed.
-        /// </summary>
-        /// <param name="Garbage">The GameObject you are done with</param>
-        public static void Release(GameObject Garbage)
-        {
-            //Check if there is a cache
-            if (!_cacheDictionary.ContainsKey(Garbage.name))
-            {
-                if (_settingDictionary.ContainsKey(Garbage.name))
-                {
-                    if (_settingDictionary[Garbage.name].IsPooled == true)
-                    {
-                        Debug.LogError("Error: No cache for such object named '" + Garbage.name + "'. Destroying!");
-                    }
-                }
+        private static Transform _poolRoot;
+        #endregion
 
-                //Sorry man, i have to destroy you :(
-                GameObject.DestroyImmediate(Garbage);
-                return;
-            }
-            else
-            {
-                //Release it to the Cache
-                _cacheDictionary[Garbage.name].Release(Garbage);
-                return;
-            }
-
-        }
+        #region Static Functions
 
 
         /// <summary>
-        /// Releases all active objects back to the Pool.
+        /// Create pool and set its initial settings
         /// </summary>
-        /// <param name="name">Name of the prefab you are working with</param>
-        public static void ReleaseAll(string name)
+        /// <typeparam name="T">Type of component to be pooled</typeparam>
+        /// <param name="original">Original GameObject prefab that contains said Component</param>
+        /// <param name="initialSize">Initial size of said Pool</param>
+        /// <param name="maxSize">Max size of said pool</param>
+        /// <returns>Success situation</returns>
+        public static bool CreatePool<T>(GameObject original = null, int initialSize = 10, int maxSize = 20) where T : MonoBehaviour
         {
-            //Check if there is a cache
-            if (!_cacheDictionary.ContainsKey(name))
+            //if pool already created
+            if (caches.ContainsKey(typeof(T)))
             {
-                if (_settingDictionary.ContainsKey(name))
+                Debug.LogError("Pool Already Set! Returning.");
+                return true;
+            }
+
+            //if original object not specified
+            if(original == null)
+            {
+                //Load that particular GameObject Prefab from "Resources/Prefabs/[ClassName]"
+                GameObject go = (GameObject)Resources.Load("Prefabs/" + typeof(T).Name, typeof(GameObject));
+
+                //if gameobject is found
+                if (go == null)
                 {
-                    if (_settingDictionary[name].IsPooled == true)
-                    {
-                        Debug.LogError("Error: No cache for such object named '" + name + "'. WTF?!");
-                    }else
-                    {
-                        Debug.LogError("Error: This object is not set to be pooled. name: " + name);
-                    }
+                    Debug.LogError("Couldnt create pool for " + typeof(T).FullName + ", and cannot find a prefab from \"Resources / Prefabs /[ClassName]\"");
+                    return false;
                 }
                 else
                 {
-                    Debug.LogError("Error: This object does not have a setting, did you forget to specify settings for ->"+name);
+                    //Create pool with found GameObject
+                    CreatePool<T>(go, initialSize, maxSize);
                 }
-                
-                //Nothing to do here
-                return;
+
             }
-            else
+
+            //if specified GameObject has required component
+            if (original.GetComponent<T>() == null)
             {
-                //Release ALL madafaka
-                _cacheDictionary[name].ReleaseAll();
-                return;
+                Debug.LogError("Couldnt create pool for " + typeof(T).FullName + ", because specified prefab doesnt have required component");
+                return false;
             }
 
+            //Create Cache object to store pooled objects
+            Cache c = new Cache(original, typeof(T), initialSize, maxSize);
 
+            //Store Cache to a dictionart to be found with type later
+            caches.Add(typeof(T), c);
+
+            //returns true for success
+            return true;
         }
 
         /// <summary>
-        /// Sets Settings for a particular object
+        /// Gets an Component from pool. 
+        /// If no pool found, it will try to create a pool with a prefab from "Resources/Prefabs/[ClassName]"
         /// </summary>
-        /// <param name="Name">Name of the object</param>
-        /// <param name="IsPooled">Whether it will be Cached</param>
-        /// <param name="InitialSize">Initial size of the Cache</param>
-        public static void SetSetting(string Name, bool IsPooled = true, int InitialSize = 10)
+        /// <typeparam name="T">Component type to be pulled from pool</typeparam>
+        /// <returns>Component from pool</returns>
+        public static T Get<T>() where T : MonoBehaviour
         {
-
-            if (Name == null || Name == "")
+            //Check if a cache exists for said Type
+            if (!caches.ContainsKey(typeof(T)))
             {
-                Debug.Log("You must specify a name to set the setting!");
+                //Try to create pool from nothing, it may fail
+                bool error = !CreatePool<T>();
+                if (error)
+                {
+                    return null;
+                }
+            }
+
+            //Find cache from dictionary
+            Cache c = caches[typeof(T)];
+
+            //Get a Component from Cache
+            T t = c.Get() as T;
+            
+            //Return Component
+            return t;
+        }
+
+        /// <summary>
+        /// Releases the Component you once get from Pool. If it doesnt belong to a pool, it will do nothing.
+        /// </summary>
+        /// <typeparam name="T">Component type to be Released to pool</typeparam>
+        /// <param name="garbage">Component to be released</param>
+        public static void Release<T>(T garbage) where T : MonoBehaviour
+        {
+            //Check if there is a pool for given Component Type
+            if (!caches.ContainsKey(typeof(T)))
+            {
+                Debug.LogError("No pool found for this type " + typeof(T).ToString());
                 return;
             }
 
-            if (!_settingDictionary.ContainsKey(Name))
-            {
-                _settingDictionary.Add(Name, new Setting());
-            }
+            //Find cache from dictionary
+            Cache c = caches[typeof(T)];
 
-            _settingDictionary[Name].IsPooled = IsPooled;
-            _settingDictionary[Name].InitialSize = InitialSize;
+            //Release Component to found Cache
+            c.Release(garbage);
 
-            if (IsPooled)
-            {
-                //Create Cache if not yet cached
-                if (!_cacheDictionary.ContainsKey(Name))
-                {
-                    //Load that particular GameObject Prefab from "Resources/Prefabs/[Name]"
-                    GameObject go = (GameObject)Resources.Load("Prefabs/" + Name, typeof(GameObject));
-                    if (!go)
-                    {
-                        //Dont forget to yell the error!!!
-                        Debug.LogError("Error: No Pool nor Prefab for such object named '" + Name + "'. Couldnt create a Cache for it!");
-                    }
-                    else
-                    {
-                        //There it is. Original one, create a Cache for it.
-                        Cache cache = new Cache(go, _settingDictionary[Name].InitialSize);
-
-                        //And Add it to the dictionary
-                        _cacheDictionary.Add(Name, cache);
-                    }
-
-                }
-
-            }
-
+            return;
         }
 
-
-        private static GameObject createErrorObject(string Name)
+        /// <summary>
+        /// Releases all active components back to the Pool.
+        /// </summary>
+        /// <typeparam name="T">Component type to be Released</typeparam>
+        public static void ReleaseAll<T>() where T : MonoBehaviour
         {
-            //create empty object
-            GameObject go = new GameObject(Name);
+            //Check if there is a pool for given Component Type
+            if (!caches.ContainsKey(typeof(T)))
+            {
+                Debug.LogError("No pool found for this type " + typeof(T).ToString());
+                return;
+            }
 
-            //TODO: Emit RED particles!!!
-            //note: Its not possible to complately edit particle system in unity 5 script
+            //Find cache from dictionary
+            Cache c = caches[typeof(T)];
 
-            //Write ERROR!!!
-            TextMesh tm = go.AddComponent<TextMesh>();
-            tm.text = "[INVALID-NAME]";
-            tm.alignment = TextAlignment.Center;
-            tm.anchor = TextAnchor.MiddleCenter;
-            tm.color = Color.red;
-            tm.characterSize = 0.05f;
-            tm.fontSize = 50;
-
-            //And Log
-            Debug.LogError("Created invalid name object! Sometings must be going crazy.");
-
-            //return an object that yells i have an error!!!
-            return go;
+            //Collect all Component from game that originated from this pool
+            c.ReleaseAll();
         }
+
+        #endregion
+
+        #region Caches
+        static readonly Dictionary<Type, Cache> caches = new Dictionary<Type, Cache>();
+
         private class Cache
         {
-
-            private List<GameObject> active = new List<GameObject>();
-            private Stack<GameObject> stack = new Stack<GameObject>();
+            /// <summary>
+            /// active Components that are in game
+            /// </summary>
+            private List<Component> active = new List<Component>();
+            /// <summary>
+            /// pooled Componenets that are ready to be Get
+            /// </summary>
+            private Stack<Component> stack = new Stack<Component>();
+            /// <summary>
+            /// original gameobject prefab that contains said Component
+            /// </summary>
             private GameObject original;
+            /// <summary>
+            /// original Type of Component to be pooled in this Cache
+            /// </summary>
+            private Type originalType;
+            /// <summary>
+            /// max size of this Cache
+            /// </summary>
+            private int maxSize;
 
-            public Cache(GameObject original, int InitialSize)
+            public Cache(GameObject original, Type originalType, int initialSize = 10, int maxSize = 20)
             {
                 this.original = original;
+                this.originalType = originalType;
+                this.maxSize = maxSize;
 
-                for (int i = 0; i < InitialSize; i++)
+                for (int i = 0; i < initialSize; i++)
                 {
-                    GameObject go = GameObject.Instantiate(original);
-                    go.name = original.name;
-                    go.SetActive(false);
-                    stack.Push(go);
+                    CreateOne();
                 }
 
             }
 
-            public GameObject Pop()
+            /// <summary>
+            /// Grows Cache by one
+            /// </summary>
+            public void CreateOne()
             {
+                if ((active.Count + stack.Count + 1) > maxSize)
+                {
+                    Debug.LogError("Pool Reached max size of " + maxSize + " wont create new one.");
+                    throw new Exception("Pool resize error exception");
+                }
+
+                GameObject go = GameObject.Instantiate(original);
+                go.name = original.name;
+
+                go.transform.SetParent(PoolRoot);
+
+                go.SetActive(false);
+
+                Component m = go.GetComponent(originalType);
+
+                stack.Push(m);
+            }
+            
+
+            public Component Get()
+            {
+
                 if (stack.Count <= 0)
                 {
-                    GameObject go = GameObject.Instantiate(original);
-                    go.name = original.name;
-                    active.Add(go);
+                    CreateOne();
+                }
 
-                    return go;
+                Component m = stack.Pop();
+                m.gameObject.SetActive(true);
+                active.Add(m);
+
+                m.gameObject.transform.SetParent(null);
+
+                return m;
+            }
+
+            public void Release(Component m)
+            {
+                if (stack.Count >= maxSize)
+                {
+                    Debug.LogError("Pool Cache trying to grow bigger than its maxSize, please adress this issue");
+                    return;
                 }
                 else
                 {
-                    GameObject go = stack.Pop();
-                    go.SetActive(true);
-                    active.Add(go);
+                    if (!active.Contains(m))
+                    {
+                        Debug.LogError("This object is not a member of this pool or it is already released to pool, rejecting");
+                        return;
+                    }
 
-                    return go;
+                    if (stack.Contains(m))
+                    {
+                        Debug.LogError("This object is already released to pool, rejecting");
+                        return;
+                    }
+
+                    active.Remove(m);
+
+                    m.transform.SetParent(PoolRoot);
+
+                    m.gameObject.SetActive(false);
+                    stack.Push(m);
                 }
 
-                
-            }
-
-            public void Release(GameObject go)
-            {
-                active.Remove(go);
-
-                go.SetActive(false);
-                stack.Push(go);
             }
 
             public void ReleaseAll()
             {
-                foreach (GameObject go in active)
+                foreach (MonoBehaviour m in active)
                 {
-                    go.SetActive(false);
-                    stack.Push(go);   
+                    m.transform.SetParent(PoolRoot);
+
+                    m.gameObject.SetActive(false);
+                    stack.Push(m);
                 }
 
                 active.Clear();
@@ -309,98 +313,10 @@ namespace seyahdoo.pooling
             }
 
         }
-        private class Setting
-        {
-            public bool IsPooled = true;
-            public int InitialSize = 10;
-        }
 
+        #endregion
     }
-
-    /// <summary>
-    /// For use "this.Release();" inside scripts insted of "Pool.Relase(this);"
-    /// and this.Get("[Asset_Name]");
-    /// </summary>
-    public static class PoolExtention
-    {
-        public static void Release<T>(this T prefab) where T : Component
-        {
-            Pool.Release(prefab.gameObject);
-        }
-
-        public static void Release(this GameObject prefab)
-        {
-            Pool.Release(prefab);
-        }
-
-        public static GameObject Get<T>(this T prefab, string Name) where T : Component
-        {
-            return Pool.Get(Name);
-        }
-
-        public static GameObject Get(this GameObject prefab, string Name)
-        {
-            return Pool.Get(Name);
-        }
-
-    }
-
-#if UNITY_EDITOR
-
-    /// <summary>
-    /// A small window for pool controll
-    /// </summary>
-    public class PoolWindow : EditorWindow
-    {
-
-        public string stringX = "";
-
-        [MenuItem("Tools/Seyahdoo/Pool Controls")]
-        static void Init()
-        {
-            EditorWindow window = GetWindow(typeof(PoolWindow));
-            window.Show();
-        }
-
-        void OnGUI()
-        {
-            GUILayout.Label("Seyahdoo Pool API");
-
-            stringX = EditorGUILayout.TextField("x ->", stringX);
-            if (GUILayout.Button("Pool.Get(x)"))
-            {
-                //Debug.Log(getFromPool);
-                Pool.Get(stringX);
-            }
-
-            if (Selection.activeGameObject)
-            {
-                //i didnt like this code :(
-                //i think i fixed the love issue here
-                if (GUILayout.Button("Pool.Release(Selected)"))
-                {
-
-                    List<GameObject> toRelease = new List<GameObject>(Selection.gameObjects);
-                    
-                    foreach (var item in toRelease)
-                    {
-                        item.Release();
-                    }
-                }
-            }
-            else
-            {
-                GUILayout.Label("Select objects to use Release object function");
-            }
-
-            this.Repaint();
-        }
-
-
-    }
-
-
-#endif
-
-
+    
 }
+
+
