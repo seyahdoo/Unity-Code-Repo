@@ -63,10 +63,10 @@ namespace seyahdoo.pooling.v3
         /// Create pool and set its initial settings
         /// </summary>
         /// <typeparam name="T">Type of component to be pooled</typeparam>
-        /// <param name="original">Original GameObject prefab that contains said Component</param>
-        /// <param name="initialSize">Initial size of said Pool</param>
-        /// <param name="maxSize">Max size of said pool</param>
-        /// <returns>Success situation</returns>
+        /// <param name="original">Original GameObject prefab that contains the Component to be pooled</param>
+        /// <param name="initialSize">Initial size of the pool</param>
+        /// <param name="maxSize">Max size of the pool</param>
+        /// <returns>Success</returns>
         public static bool CreatePool<T>(GameObject original = null, int initialSize = 10, int maxSize = 20) where T : MonoBehaviour
         {
             //if pool already created
@@ -82,18 +82,15 @@ namespace seyahdoo.pooling.v3
                 //Load that particular GameObject Prefab from "Resources/Prefabs/[ClassName]"
                 GameObject go = (GameObject)Resources.Load("Prefabs/" + typeof(T).Name, typeof(GameObject));
 
-                //if gameobject is found
+                //if gameobject is not found
                 if (go == null)
                 {
                     Debug.LogError("Couldnt create pool for " + typeof(T).FullName + ", and cannot find a prefab from \"Resources / Prefabs /[ClassName]\"");
                     return false;
                 }
-                else
-                {
-                    //Create pool with found GameObject
-                    CreatePool<T>(go, initialSize, maxSize);
-                }
 
+                //Set original object to found object
+                original = go;
             }
 
             //if specified GameObject has required component
@@ -145,8 +142,8 @@ namespace seyahdoo.pooling.v3
         /// <summary>
         /// Releases the Component you once get from Pool. If it doesnt belong to a pool, it will do nothing.
         /// </summary>
-        /// <typeparam name="T">Component type to be Released to pool</typeparam>
-        /// <param name="garbage">Component to be released</param>
+        /// <typeparam name="T">Component type to be Released to the pool</typeparam>
+        /// <param name="garbage">Component to be released to the pool</param>
         public static void Release<T>(T garbage) where T : MonoBehaviour
         {
             //Check if there is a pool for given Component Type
@@ -193,9 +190,9 @@ namespace seyahdoo.pooling.v3
         private class Cache
         {
             /// <summary>
-            /// active Components that are in game
+            /// all components that belongs to this pool
             /// </summary>
-            private List<Component> active = new List<Component>();
+            private List<Component> belongings = new List<Component>();
             /// <summary>
             /// pooled Componenets that are ready to be Get
             /// </summary>
@@ -212,6 +209,10 @@ namespace seyahdoo.pooling.v3
             /// max size of this Cache
             /// </summary>
             private int maxSize;
+            /// <summary>
+            /// keeps track of components, says if this component is in the pool or not
+            /// </summary>
+            private Dictionary<Component, bool> inPool = new Dictionary<Component, bool>();
 
             public Cache(GameObject original, Type originalType, int initialSize = 10, int maxSize = 20)
             {
@@ -229,12 +230,13 @@ namespace seyahdoo.pooling.v3
             /// <summary>
             /// Grows Cache by one
             /// </summary>
-            public void CreateOne()
+            /// <returns>success</returns>
+            public bool CreateOne()
             {
-                if ((active.Count + stack.Count + 1) > maxSize)
+                if ((belongings.Count) >= maxSize)
                 {
                     Debug.LogError("Pool Reached max size of " + maxSize + " wont create new one.");
-                    throw new Exception("Pool resize error exception");
+                    return false;
                 }
 
                 GameObject go = GameObject.Instantiate(original);
@@ -242,32 +244,68 @@ namespace seyahdoo.pooling.v3
 
                 go.transform.SetParent(PoolRoot);
 
-                go.SetActive(false);
+                Component c = go.GetComponent(originalType);
 
-                Component m = go.GetComponent(originalType);
+                belongings.Add(c);
 
-                stack.Push(m);
+                inPool.Add(c, true);
+
+                IPoolable p = c as IPoolable;
+
+                if(p != null)
+                {
+                    p.OnPoolInstantiate();
+                }
+                else
+                {
+                    go.SetActive(false);
+                }
+
+                stack.Push(c);
+
+                return true;
             }
             
-
+            /// <summary>
+            /// Gets a Component from pool
+            /// </summary>
+            /// <returns>a component removed from pool</returns>
             public Component Get()
             {
 
                 if (stack.Count <= 0)
                 {
-                    CreateOne();
+                    if (!CreateOne())
+                    {
+                        return null;
+                    }
                 }
 
-                Component m = stack.Pop();
-                m.gameObject.SetActive(true);
-                active.Add(m);
+                Component c = stack.Pop();
 
-                m.gameObject.transform.SetParent(null);
+                c.gameObject.transform.SetParent(null);
+                inPool[c] = false;
 
-                return m;
+                IPoolable p = c as IPoolable;
+
+                if(p != null)
+                {
+                    p.OnPoolGet();
+                }
+                else
+                {
+                    c.gameObject.SetActive(true);
+
+                }
+
+                return c;
             }
 
-            public void Release(Component m)
+            /// <summary>
+            /// Releases a Component to a pool once came from pool
+            /// </summary>
+            /// <param name="c">a Component came from pool</param>
+            public void Release(Component c)
             {
                 if (stack.Count >= maxSize)
                 {
@@ -276,39 +314,63 @@ namespace seyahdoo.pooling.v3
                 }
                 else
                 {
-                    if (!active.Contains(m))
+
+                    if (!inPool.ContainsKey(c))
                     {
-                        Debug.LogError("This object is not a member of this pool or it is already released to pool, rejecting");
+                        Debug.LogError("This object is not a member of this pool, rejecting");
                         return;
                     }
 
-                    if (stack.Contains(m))
+                    if (inPool[c])
                     {
                         Debug.LogError("This object is already released to pool, rejecting");
                         return;
                     }
 
-                    active.Remove(m);
+                    c.transform.SetParent(PoolRoot);
+                    inPool[c] = true;
 
-                    m.transform.SetParent(PoolRoot);
+                    IPoolable p = c as IPoolable;
 
-                    m.gameObject.SetActive(false);
-                    stack.Push(m);
+                    if (p != null)
+                    {
+                        p.OnPoolRelease();
+                    }
+                    else
+                    {
+                        c.gameObject.SetActive(false);
+                    }
+                    
+                    stack.Push(c);
                 }
 
             }
 
+            /// <summary>
+            /// Retracts all Components that came from pool
+            /// </summary>
             public void ReleaseAll()
             {
-                foreach (MonoBehaviour m in active)
+                foreach (Component c in belongings)
                 {
-                    m.transform.SetParent(PoolRoot);
+                    if (inPool[c]) continue;
 
-                    m.gameObject.SetActive(false);
-                    stack.Push(m);
+                    stack.Push(c);
+                    c.transform.SetParent(PoolRoot);
+                    inPool[c] = true;
+
+                    IPoolable p = c as IPoolable;
+
+                    if (p != null)
+                    {
+                        p.OnPoolRelease();
+                    }
+                    else
+                    {
+                        c.gameObject.SetActive(false);
+                    }
+                    
                 }
-
-                active.Clear();
 
             }
 
@@ -316,7 +378,19 @@ namespace seyahdoo.pooling.v3
 
         #endregion
     }
-    
+
+    #region IPoolable Interface
+    /// <summary>
+    /// Used for keeping track of Pool Events inside poolable Component
+    /// </summary>
+    public interface IPoolable
+    {
+        void OnPoolInstantiate();
+        void OnPoolRelease();
+        void OnPoolGet();
+
+    }
+    #endregion
 }
 
 

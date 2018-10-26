@@ -8,6 +8,8 @@ public class pooltest : MonoBehaviour {
 
     public GameObject origtest;
 
+    public readonly Stack<RandomSpinningCube> cubes = new Stack<RandomSpinningCube>();
+
     public RandomSpinningCube cube;
 
 	// Use this for initialization
@@ -22,18 +24,24 @@ public class pooltest : MonoBehaviour {
 
         if (Input.GetKeyDown(KeyCode.G))
         {
-            cube = Pool.Get<RandomSpinningCube>();
-            cube.transform.position = Vector3.right * 5;
+            cubes.Push(Pool.Get<RandomSpinningCube>());
+            cubes.Peek().transform.position = Vector3.right * 5;
         }
 
         if (Input.GetKeyDown(KeyCode.H))
         {
-            Pool.Release<RandomSpinningCube>(cube);
+            Pool.Release<RandomSpinningCube>(cubes.Pop());
         }
 
         if (Input.GetKeyDown(KeyCode.J))
         {
             Pool.ReleaseAll<RandomSpinningCube>();
+            cubes.Clear();
+        }
+
+        if (Input.GetKeyDown(KeyCode.Y))
+        {
+            Pool.Release<RandomSpinningCube>(cube);
         }
     }
 }
