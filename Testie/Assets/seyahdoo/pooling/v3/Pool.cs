@@ -5,8 +5,8 @@
 *
 * 
 * @author  Seyyid Ahmed Doğan (seyahdoo)
-* @version 3.0.0
-* @since   2018-10-23
+* @version 3.0.1
+* @since   2018-10-26
 */
 
 using System;
@@ -241,6 +241,7 @@ namespace seyahdoo.pooling.v3
 
                 GameObject go = GameObject.Instantiate(original);
                 go.name = original.name;
+                go.SetActive(false);
 
                 go.transform.SetParent(PoolRoot);
 
@@ -255,10 +256,6 @@ namespace seyahdoo.pooling.v3
                 if(p != null)
                 {
                     p.OnPoolInstantiate();
-                }
-                else
-                {
-                    go.SetActive(false);
                 }
 
                 stack.Push(c);
@@ -283,6 +280,7 @@ namespace seyahdoo.pooling.v3
 
                 Component c = stack.Pop();
 
+                c.gameObject.SetActive(true);
                 c.gameObject.transform.SetParent(null);
                 inPool[c] = false;
 
@@ -291,11 +289,6 @@ namespace seyahdoo.pooling.v3
                 if(p != null)
                 {
                     p.OnPoolGet();
-                }
-                else
-                {
-                    c.gameObject.SetActive(true);
-
                 }
 
                 return c;
@@ -327,6 +320,7 @@ namespace seyahdoo.pooling.v3
                         return;
                     }
 
+                    c.gameObject.SetActive(false);
                     c.transform.SetParent(PoolRoot);
                     inPool[c] = true;
 
@@ -335,10 +329,6 @@ namespace seyahdoo.pooling.v3
                     if (p != null)
                     {
                         p.OnPoolRelease();
-                    }
-                    else
-                    {
-                        c.gameObject.SetActive(false);
                     }
                     
                     stack.Push(c);
@@ -355,7 +345,7 @@ namespace seyahdoo.pooling.v3
                 {
                     if (inPool[c]) continue;
 
-                    stack.Push(c);
+                    c.gameObject.SetActive(false);
                     c.transform.SetParent(PoolRoot);
                     inPool[c] = true;
 
@@ -365,11 +355,9 @@ namespace seyahdoo.pooling.v3
                     {
                         p.OnPoolRelease();
                     }
-                    else
-                    {
-                        c.gameObject.SetActive(false);
-                    }
-                    
+
+                    stack.Push(c);
+
                 }
 
             }

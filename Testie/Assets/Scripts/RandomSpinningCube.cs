@@ -15,18 +15,15 @@ public class RandomSpinningCube : MonoBehaviour, IPoolable {
     {
         //Debug.Log("Get Object from pool");
         Awake();
-        this.gameObject.SetActive(true);
     }
 
     public void OnPoolInstantiate()
     {
-        gameObject.SetActive(false);
     }
 
     public void OnPoolRelease()
     {
         //Debug.Log("Release object to pool");
-        gameObject.SetActive(false);
     }
 
     void Awake()
