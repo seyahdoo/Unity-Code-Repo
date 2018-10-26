@@ -3,19 +3,20 @@ using System.Collections.Generic;
 using UnityEngine;
 
 using seyahdoo.pooling.v3;
+using UnityEngine.SceneManagement;
 
 public class pooltest : MonoBehaviour {
 
     public GameObject origtest;
 
-    public readonly Stack<RandomSpinningCube> cubes = new Stack<RandomSpinningCube>();
+    public Stack<RandomSpinningCube> cubes = new Stack<RandomSpinningCube>();
 
     public RandomSpinningCube cube;
 
 	// Use this for initialization
-	void Start () {
+	void Awake () {
 
-        //Pool.CreatePool<RandomSpinningCube>(origtest);
+        Pool.CreatePool<RandomSpinningCube>(origtest);
 
 	}
 	
@@ -42,6 +43,11 @@ public class pooltest : MonoBehaviour {
         if (Input.GetKeyDown(KeyCode.Y))
         {
             Pool.Release<RandomSpinningCube>(cube);
+        }
+
+        if (Input.GetKeyDown(KeyCode.T))
+        {
+            SceneManager.LoadScene("pooltest_other_scene");
         }
     }
 }
