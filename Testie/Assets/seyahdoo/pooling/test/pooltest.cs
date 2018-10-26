@@ -7,16 +7,16 @@ using UnityEngine.SceneManagement;
 
 public class pooltest : MonoBehaviour {
 
-    public GameObject origtest;
+    public GameObject OriginalPrefab;
 
-    public Stack<RandomSpinningCube> cubes = new Stack<RandomSpinningCube>();
+    public Stack<RandomSpinningCube> CubesInUse = new Stack<RandomSpinningCube>();
 
     public RandomSpinningCube cube;
 
 	// Use this for initialization
 	void Awake () {
 
-        Pool.CreatePool<RandomSpinningCube>(origtest);
+        Pool.CreatePool<RandomSpinningCube>(OriginalPrefab);
 
 	}
 	
@@ -25,19 +25,24 @@ public class pooltest : MonoBehaviour {
 
         if (Input.GetKeyDown(KeyCode.G))
         {
-            cubes.Push(Pool.Get<RandomSpinningCube>());
-            cubes.Peek().transform.position = Vector3.right * 5;
+            cube = Pool.Get<RandomSpinningCube>();
+
+            CubesInUse.Push(cube);
+
+            cube.transform.position = Vector3.right * 5;
         }
 
         if (Input.GetKeyDown(KeyCode.H))
         {
-            Pool.Release<RandomSpinningCube>(cubes.Pop());
+            cube = CubesInUse.Pop();
+
+            Pool.Release<RandomSpinningCube>(cube);
         }
 
         if (Input.GetKeyDown(KeyCode.J))
         {
             Pool.ReleaseAll<RandomSpinningCube>();
-            cubes.Clear();
+            CubesInUse.Clear();
         }
 
         if (Input.GetKeyDown(KeyCode.Y))
