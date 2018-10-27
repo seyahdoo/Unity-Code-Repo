@@ -5,7 +5,7 @@
 *
 * 
 * @author  Seyyid Ahmed Doğan (seyahdoo)
-* @version 3.2.1
+* @version 3.2.2
 * @since   2018-10-26
 */
 
@@ -46,18 +46,9 @@ namespace seyahdoo.pooling.v3
                 }
                 else
                 {
-                    DontDestroyPool lp = GameObject.FindObjectOfType<DontDestroyPool>();
-                    GameObject go;
-
-                    if (!lp)
-                    {
-                        go = new GameObject("PoolRoot");
-                        lp = go.AddComponent<DontDestroyPool>();
-                    }
-                    else
-                    {
-                        go = lp.gameObject;
-                    }
+                    GameObject go = new GameObject("Pool");
+                    go.AddComponent<DontDestroy>();
+                    go.transform.SetParent(null);
 
                     _poolRoot = go.transform;
                     return _poolRoot;
@@ -71,9 +62,9 @@ namespace seyahdoo.pooling.v3
         #region Dont Destroy Pool On Load
 
         /// <summary>
-        /// this is for using Scene Loading Event and DontDestroyOnLoad
+        /// this is for using Scene Unloaded Event and DontDestroyOnLoad
         /// </summary>
-        private class DontDestroyPool : MonoBehaviour
+        private class DontDestroy : MonoBehaviour
         {
 
             private void Awake()
@@ -81,10 +72,19 @@ namespace seyahdoo.pooling.v3
 
                 DontDestroyOnLoad(this.gameObject);
 
-                SceneManager.sceneLoaded += (Scene arg0, LoadSceneMode arg1) => {
-                    RecoverAll();
+                SceneManager.sceneUnloaded += (Scene scene) =>
+                {
+
+                    //Sometimes in editor, this event is being fired with "Preview Scene", Even though there is no scene unloaded
+                    if(scene.name != "Preview Scene")
+                    {
+                        Pool.RecoverAll();
+                    }
+
                 };
+
             }
+
 
         }
 
