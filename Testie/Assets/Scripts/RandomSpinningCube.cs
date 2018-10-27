@@ -11,7 +11,7 @@ public class RandomSpinningCube : MonoBehaviour, IPoolable {
     public Vector3 rotationSpeed;
     public float maxRotationSpeed = 1;
 
-    public void OnPoolGet()
+    public void OnPoolSpawn()
     {
         //Debug.Log("Get Object from pool");
         Awake();
@@ -21,7 +21,7 @@ public class RandomSpinningCube : MonoBehaviour, IPoolable {
     {
     }
 
-    public void OnPoolRelease()
+    public void OnPoolRecover()
     {
         //Debug.Log("Release object to pool");
     }

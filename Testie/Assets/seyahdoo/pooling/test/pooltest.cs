@@ -25,7 +25,7 @@ public class pooltest : MonoBehaviour {
 
         if (Input.GetKeyDown(KeyCode.G))
         {
-            cube = Pool.Get<RandomSpinningCube>();
+            cube = Pool.Spawn<RandomSpinningCube>();
 
             CubesInUse.Push(cube);
 
@@ -36,18 +36,18 @@ public class pooltest : MonoBehaviour {
         {
             cube = CubesInUse.Pop();
 
-            Pool.Release<RandomSpinningCube>(cube);
+            Pool.Recover<RandomSpinningCube>(cube);
         }
 
         if (Input.GetKeyDown(KeyCode.J))
         {
-            Pool.ReleaseAll<RandomSpinningCube>();
+            Pool.RecoverAll<RandomSpinningCube>();
             CubesInUse.Clear();
         }
 
         if (Input.GetKeyDown(KeyCode.Y))
         {
-            Pool.Release<RandomSpinningCube>(cube);
+            Pool.Recover<RandomSpinningCube>(cube);
         }
 
         if (Input.GetKeyDown(KeyCode.T))

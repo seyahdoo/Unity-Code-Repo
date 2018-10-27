@@ -39,9 +39,9 @@ public class PoolBenchmark : MonoBehaviour {
     {
         seyahdoo.pooling.v3.Pool.CreatePool<RandomSpinningCube>(null,20000,20000);
 
-        Benchmark(() => { cubes.Push(seyahdoo.pooling.v3.Pool.Get<RandomSpinningCube>()); }, 10000);
-        Benchmark(() => { seyahdoo.pooling.v3.Pool.Release<RandomSpinningCube>(cubes.Pop()); }, 10000);
-        Benchmark(() => { seyahdoo.pooling.v3.Pool.ReleaseAll<RandomSpinningCube>(); }, 1);
+        Benchmark(() => { cubes.Push(seyahdoo.pooling.v3.Pool.Spawn<RandomSpinningCube>()); }, 10000);
+        Benchmark(() => { seyahdoo.pooling.v3.Pool.Recover<RandomSpinningCube>(cubes.Pop()); }, 10000);
+        Benchmark(() => { seyahdoo.pooling.v3.Pool.RecoverAll<RandomSpinningCube>(); }, 1);
 
         cubes.Clear();
 
