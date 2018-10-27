@@ -38,25 +38,25 @@ public class ObjectBuilderEditor : Editor
         {
             RandomSpinningCube c;
 
-            c = Pool.Spawn<RandomSpinningCube>();
+            c = Pool.Get<RandomSpinningCube>();
             c.transform.rotation.SetLookRotation(Random.insideUnitSphere);
 
             pt.CubesInUse.Push(c);
         }
 
-        if (GUILayout.Button("Recover Last Spawned Object"))
+        if (GUILayout.Button("Release Last Spawned Object"))
         {
-            Pool.Recover<RandomSpinningCube>(pt.CubesInUse.Pop());
+            Pool.Release<RandomSpinningCube>(pt.CubesInUse.Pop());
         }
 
-        if (GUILayout.Button("Recover All"))
+        if (GUILayout.Button("Release All"))
         {
-            Pool.RecoverAll<RandomSpinningCube>();
+            Pool.ReleaseAll<RandomSpinningCube>();
         }
 
-        if (GUILayout.Button("Recover Selected Object"))
+        if (GUILayout.Button("Release Selected Object"))
         {
-            Pool.Recover<RandomSpinningCube>(pt.cube);
+            Pool.Release<RandomSpinningCube>(pt.cube);
         }
 
         if (GUILayout.Button("Load \"pooltest_other_scene\""))
@@ -78,17 +78,6 @@ public class ObjectBuilderEditor : Editor
         {
             Pool.DestroyAllPools();
         }
-
-        if (GUILayout.Button("Recover Object"))
-        {
-            Pool.Recover<RandomSpinningCube>(pt.CubesInUse.Pop());
-        }
-
-        if (GUILayout.Button("Recover Object"))
-        {
-            Pool.Recover<RandomSpinningCube>(pt.CubesInUse.Pop());
-        }
-
 
 
     }

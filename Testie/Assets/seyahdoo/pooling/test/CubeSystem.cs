@@ -21,7 +21,7 @@ public class CubeSystem : MonoBehaviour {
 
     void SpawnCube()
     {
-        RandomSpinningCube cube = Pool.Spawn<RandomSpinningCube>();
+        RandomSpinningCube cube = Pool.Get<RandomSpinningCube>();
 
         cube.transform.position = Random.insideUnitSphere * 4;
 
@@ -33,7 +33,7 @@ public class CubeSystem : MonoBehaviour {
     {
         RandomSpinningCube cube = queue.Dequeue();
 
-        Pool.Recover<RandomSpinningCube>(cube);
+        Pool.Release<RandomSpinningCube>(cube);
 
     }
 

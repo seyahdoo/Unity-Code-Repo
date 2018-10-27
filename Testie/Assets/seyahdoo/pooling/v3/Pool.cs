@@ -78,7 +78,7 @@ namespace seyahdoo.pooling.v3
                     //Sometimes in editor, this event is being fired with "Preview Scene", Even though there is no scene unloaded
                     if(scene.name != "Preview Scene")
                     {
-                        Pool.RecoverAll();
+                        Pool.ReleaseAll();
                     }
 
                 };
@@ -150,7 +150,7 @@ namespace seyahdoo.pooling.v3
         /// </summary>
         /// <typeparam name="T">Component type to be pulled from pool</typeparam>
         /// <returns>Component from pool</returns>
-        public static T Spawn<T>() where T : Component
+        public static T Get<T>() where T : Component
         {
             //Check if a cache exists for said Type
             if (!caches.ContainsKey(typeof(T)))
@@ -167,18 +167,18 @@ namespace seyahdoo.pooling.v3
             Cache c = caches[typeof(T)];
 
             //Get a Component from Cache
-            T t = c.Spawn() as T;
+            T t = c.Get() as T;
             
             //Return Component
             return t;
         }
 
         /// <summary>
-        /// Recover the Component you once get from Pool. If it doesnt belong to a pool, it will do nothing.
+        /// Release the Component you once get from Pool. If it doesnt belong to a pool, it will do nothing.
         /// </summary>
-        /// <typeparam name="T">Component type to be Recovered to the pool</typeparam>
-        /// <param name="component">Component to be Recovered to the pool</param>
-        public static void Recover<T>(T component) where T : Component
+        /// <typeparam name="T">Component type to be Releaseed to the pool</typeparam>
+        /// <param name="component">Component to be Releaseed to the pool</param>
+        public static void Release<T>(T component) where T : Component
         {
             //Check if there is a pool for given Component Type
             if (!caches.ContainsKey(typeof(T)))
@@ -190,17 +190,17 @@ namespace seyahdoo.pooling.v3
             //Find cache from dictionary
             Cache c = caches[typeof(T)];
 
-            //Recover the Component to found Cache
-            c.Recover(component);
+            //Release the Component to found Cache
+            c.Release(component);
 
             return;
         }
 
         /// <summary>
-        /// Recovers all active components of T type back to the Pool.
+        /// Releases all active components of T type back to the Pool.
         /// </summary>
-        /// <typeparam name="T">Component type to be Recovered</typeparam>
-        public static void RecoverAll<T>() where T : Component
+        /// <typeparam name="T">Component type to be Releaseed</typeparam>
+        public static void ReleaseAll<T>() where T : Component
         {
             //Check if there is a pool for given Component Type
             if (!caches.ContainsKey(typeof(T)))
@@ -213,17 +213,17 @@ namespace seyahdoo.pooling.v3
             Cache c = caches[typeof(T)];
 
             //Collect all Component from game that originated from this pool
-            c.RecoverAll();
+            c.ReleaseAll();
         }
 
         /// <summary>
-        /// Recovers all active components that belong to all pools
+        /// Releases all active components that belong to all pools
         /// </summary>
-        public static void RecoverAll()
+        public static void ReleaseAll()
         {
             foreach (Cache c in caches.Values)
             {
-                c.RecoverAll();
+                c.ReleaseAll();
             }
         }
 
@@ -261,7 +261,7 @@ namespace seyahdoo.pooling.v3
 
         #region Cache Class
 
-        static readonly Dictionary<Type, Cache> caches = new Dictionary<Type, Cache>();
+        private static readonly Dictionary<Type, Cache> caches = new Dictionary<Type, Cache>();
 
         /// <summary>
         /// Cache is a pool for a specific type of object, every pooled object will have their own Cache
@@ -350,7 +350,7 @@ namespace seyahdoo.pooling.v3
             /// Gets a Component from pool
             /// </summary>
             /// <returns>a component removed from pool</returns>
-            public Component Spawn()
+            public Component Get()
             {
                 if (passives.Count <= 0)
                 {
@@ -370,17 +370,17 @@ namespace seyahdoo.pooling.v3
 
                 if(p != null)
                 {
-                    p.OnPoolSpawn();
+                    p.OnPoolGet();
                 }
 
                 return c;
             }
 
             /// <summary>
-            /// Recovers a Component to a pool once came from pool
+            /// Releases a Component to a pool once came from pool
             /// </summary>
             /// <param name="c">a Component came from pool</param>
-            public void Recover(Component c)
+            public void Release(Component c)
             {
 
                 if (!inPool.ContainsKey(c))
@@ -391,7 +391,7 @@ namespace seyahdoo.pooling.v3
 
                 if (inPool[c])
                 {
-                    Debug.LogError("This object is already recovered to pool, rejecting");
+                    Debug.LogError("This object is already releaseed to pool, rejecting");
                     return;
                 }
 
@@ -405,7 +405,7 @@ namespace seyahdoo.pooling.v3
 
                 if (p != null)
                 {
-                    p.OnPoolRecover();
+                    p.OnPoolRelease();
                 }
 
             }
@@ -413,7 +413,7 @@ namespace seyahdoo.pooling.v3
             /// <summary>
             /// Retracts all Components that came from pool
             /// </summary>
-            public void RecoverAll()
+            public void ReleaseAll()
             {
 
                 foreach (Component c in belongings)
@@ -431,7 +431,7 @@ namespace seyahdoo.pooling.v3
 
                     if (p != null)
                     {
-                        p.OnPoolRecover();
+                        p.OnPoolRelease();
                     }
 
                 }
@@ -471,9 +471,9 @@ namespace seyahdoo.pooling.v3
 
         void OnPoolInstantiate();
 
-        void OnPoolRecover();
+        void OnPoolRelease();
 
-        void OnPoolSpawn();
+        void OnPoolGet();
 
     }
 
