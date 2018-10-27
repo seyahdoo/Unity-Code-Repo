@@ -31,10 +31,9 @@ public class CubeSystem : MonoBehaviour {
 
     void DeSpawnCube()
     {
-        RandomSpinningCube cube = queue.Dequeue();
-
-        Pool.Release<RandomSpinningCube>(cube);
+        queue.Dequeue().Release();
 
     }
+
 
 }

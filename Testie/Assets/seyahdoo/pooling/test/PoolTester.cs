@@ -49,6 +49,11 @@ public class ObjectBuilderEditor : Editor
             Pool.Release<RandomSpinningCube>(pt.CubesInUse.Pop());
         }
 
+        if (GUILayout.Button("Release with extension method"))
+        {
+            pt.CubesInUse.Pop().Release();
+        }
+
         if (GUILayout.Button("Release All"))
         {
             Pool.ReleaseAll<RandomSpinningCube>();

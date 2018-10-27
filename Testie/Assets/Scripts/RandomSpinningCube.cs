@@ -37,7 +37,6 @@ public class RandomSpinningCube : MonoBehaviour, IPoolable {
     void FixedUpdate()
     {
         transform.localEulerAngles += rotationSpeed;
-
     }
 
 }

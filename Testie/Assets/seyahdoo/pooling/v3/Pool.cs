@@ -5,8 +5,8 @@
 *
 * 
 * @author  Seyyid Ahmed Doğan (seyahdoo)
-* @version 3.3.2
-* @since   2018-10-26
+* @version 3.4.2
+* @since   2018-10-27
 */
 
 using System;
@@ -23,7 +23,7 @@ namespace seyahdoo.pooling.v3
     /// <summary>
     /// A General API for pooling Components
     /// </summary>
-    public class Pool
+    public static class Pool
     {
 
         #region PoolRoot
@@ -460,6 +460,23 @@ namespace seyahdoo.pooling.v3
         #endregion
 
     }
+
+    #region Extension Method
+
+    /// <summary>
+    /// For using "this.Release();" to Release object to pool inside scripts insted of "Pool.Relase<T>(this);"
+    /// </summary>
+    public static class PoolExtention
+    {
+
+        public static void Release<T>(this T component) where T : Component
+        {
+            Pool.Release<T>(component);
+        }
+
+    }
+
+    #endregion
 
     #region IPoolable Interface
 
