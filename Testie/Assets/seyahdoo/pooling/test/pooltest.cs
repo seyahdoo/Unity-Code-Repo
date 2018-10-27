@@ -54,5 +54,17 @@ public class pooltest : MonoBehaviour {
         {
             SceneManager.LoadScene("pooltest_other_scene");
         }
+
+        if (Input.GetKeyDown(KeyCode.B))
+        {
+            Pool.DestroyPool<RandomSpinningCube>();
+        }
+
+        if (Input.GetKeyDown(KeyCode.N))
+        {
+            Pool.DestroyAllPools();
+        }
+
+
     }
 }

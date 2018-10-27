@@ -5,7 +5,7 @@
 *
 * 
 * @author  Seyyid Ahmed Doğan (seyahdoo)
-* @version 3.1.1
+* @version 3.2.1
 * @since   2018-10-26
 */
 
@@ -227,6 +227,36 @@ namespace seyahdoo.pooling.v3
             }
         }
 
+        /// <summary>
+        /// Destroys pool for specified Type
+        /// </summary>
+        /// <typeparam name="T">Type of Component pool to be destroyed</typeparam>
+        public static void DestroyPool<T>()
+        {
+            //Find cache from dictionary
+            Cache c = caches[typeof(T)];
+
+            c.DestroyAllBelongings();
+
+            caches.Remove(typeof(T));
+
+        }
+
+        /// <summary>
+        /// Destroys pool for all Types
+        /// </summary>
+        public static void DestroyAllPools()
+        {
+
+            foreach (Cache c in caches.Values)
+            {
+                c.DestroyAllBelongings();
+            }
+
+            caches.Clear();
+
+        }
+
         #endregion
 
         #region Cache Class
@@ -402,6 +432,23 @@ namespace seyahdoo.pooling.v3
                     }
 
                 }
+
+            }
+
+            /// <summary>
+            /// Destroys all gameobjects that belong to this pool
+            /// </summary>
+            public void DestroyAllBelongings()
+            {
+
+                foreach (Component c in belongings)
+                {
+                    GameObject.Destroy(c.gameObject);
+                }
+
+                belongings.Clear();
+                stack.Clear();
+                inPool.Clear();
 
             }
 
