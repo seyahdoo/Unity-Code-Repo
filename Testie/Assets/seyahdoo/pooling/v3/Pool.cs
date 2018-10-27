@@ -175,10 +175,11 @@ namespace seyahdoo.pooling.v3
 
         /// <summary>
         /// Release the Component you once get from Pool. If it doesnt belong to a pool, it will do nothing.
+        /// You can also use "this.Release();" to Release object to pool inside scripts insted of "Pool.Relase<T>(this);"
         /// </summary>
         /// <typeparam name="T">Component type to be Releaseed to the pool</typeparam>
         /// <param name="component">Component to be Releaseed to the pool</param>
-        public static void Release<T>(T component) where T : Component
+        public static void Release<T>(this T component) where T : Component
         {
             //Check if there is a pool for given Component Type
             if (!caches.ContainsKey(typeof(T)))
@@ -460,23 +461,6 @@ namespace seyahdoo.pooling.v3
         #endregion
 
     }
-
-    #region Extension Method
-
-    /// <summary>
-    /// For using "this.Release();" to Release object to pool inside scripts insted of "Pool.Relase<T>(this);"
-    /// </summary>
-    public static class PoolExtention
-    {
-
-        public static void Release<T>(this T component) where T : Component
-        {
-            Pool.Release<T>(component);
-        }
-
-    }
-
-    #endregion
 
     #region IPoolable Interface
 

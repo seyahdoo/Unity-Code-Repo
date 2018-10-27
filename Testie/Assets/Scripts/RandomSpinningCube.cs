@@ -32,6 +32,17 @@ public class RandomSpinningCube : MonoBehaviour, IPoolable {
             Random.Range(-maxRotationSpeed, +maxRotationSpeed),
             Random.Range(-maxRotationSpeed, +maxRotationSpeed),
             Random.Range(-maxRotationSpeed, +maxRotationSpeed));
+
+
+        //seyahdoo.pooling.v3.Pool
+        //Pool
+        //RandomSpinningCube cube;
+
+        //Pool.Release<RandomSpinningCube>(this);
+
+        //this.Release();
+
+        //this.Release();
     }
 
     void FixedUpdate()
