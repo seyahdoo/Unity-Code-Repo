@@ -5,7 +5,7 @@
 *
 * 
 * @author  Seyyid Ahmed Doğan (seyahdoo)
-* @version 3.2.2
+* @version 3.3.2
 * @since   2018-10-26
 */
 
